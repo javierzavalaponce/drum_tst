@@ -20,7 +20,7 @@
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## About
-
+Note: This is the baseline used to start testing audio project
 Ever wanted to start a new [Arduino](http://arduino.cc/) project and...
 
 -   **not use** the *terrible* Arduino IDE?
