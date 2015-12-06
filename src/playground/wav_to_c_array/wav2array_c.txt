@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sndfile.h>
+
+//gcc -Wall -o tst wav2array.c -lsndfile
+int main()
+    {
+    SNDFILE *sf;
+    SF_INFO info;
+    int num, num_items;
+    short *buf;
+    int f,sr,c;
+    int i,j;
+    FILE *out;
+    
+    /* Open the WAV file. */
+    info.format = 0;
+    sf = sf_open("320sinewave_sampled_at_16khz_amp1.wav",SFM_READ,&info);
+    if (sf == NULL)
+        {
+        printf("Failed to open the file.\n");
+        exit(-1);
+        }
+    /* Print some of the info, and figure out how much data to read. */
+    f = info.frames;
+    sr = info.samplerate;
+    c = info.channels;
+    printf("frames=%d\n",f);
+    printf("samplerate=%d\n",sr);
+    printf("channels=%d\n",c);
+    num_items = f*c;
+    printf("num_items=%d\n",num_items);
+    /* Allocate space for the data to be read, then read it. */
+    buf = (short *) malloc(num_items*sizeof(short));
+    num = sf_readf_short(sf,buf,num_items);
+    sf_close(sf);
+    printf("Read %d items\n",num);
+    /* Write the data to filedata.out. */
+    out = fopen("file_array.c","w");
+    fprintf(out,"#define MAX_SIZE_ARRAY (50) //320sinewave_sampled_at_16khz \n "); 
+    fprintf(out,"//1 cycle os sine wave \n "); 
+    fprintf(out,"const unsigned int signal[MAX_SIZE_ARRAY] PROGMEM =  \n "); 
+    for (i = 0; i < /*num*/50; i += c) {
+        for (j = 0; j < c; ++j)
+            fprintf(out,"%d, ",(buf[i+j] / 16)+2048); //convert to 12 bit data
+        fprintf(out,"\n");
+        }
+    fclose(out);
+    return 0;
+    }
